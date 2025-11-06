@@ -1,25 +1,27 @@
-name: Mirror SteamAutoCracks/ManifestHub -> this repo
+name: Mirror ManifestHub to this repo
 on:
   workflow_dispatch:
 
 jobs:
   mirror:
     runs-on: ubuntu-latest
-    steps:
-      - name: Install git
-        run: sudo apt-get update && sudo apt-get install -y git
 
-      - name: Clone source as mirror
+    steps:
+      - name: 🔧 Install Git
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y git
+
+      - name: 📥 Clone source repository as mirror
         run: |
           SRC="https://github.com/SteamAutoCracks/ManifestHub.git"
-          TMP="repo-mirror.git"
+          TMP="mirror-repo.git"
           git clone --mirror "$SRC" "$TMP"
 
-      - name: Push mirror into this repository
+      - name: 🚀 Push mirror into this repository
         env:
-          GHTOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHTOKEN: ${{ secrets.PERSONAL_TOKEN }}
         run: |
-          cd repo-mirror.git
-          # set push url to this repository using the provided GITHUB_TOKEN
+          cd mirror-repo.git
           git remote set-url --push origin "https://x-access-token:${GHTOKEN}@github.com/${{ github.repository }}.git"
-          git push --mirror
+          git push --mirror --force
